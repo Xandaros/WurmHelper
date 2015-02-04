@@ -26,7 +26,14 @@ beep :: IO ()
 beep = putStr "Beep!\n\a"
 
 startMessage :: WurmHelper ()
-startMessage = modify updateQueueLength
+startMessage = do
+    liftIO $ putStrLn "Start"
+    state <- get
+    let queueLength = _queueLength state
+    when (queueLength == 0) $ put (state{_queueLength = 1})
+
+repeatMessage :: WurmHelper ()
+repeatMessage = liftIO (putStrLn "Repeat") >> modify updateQueueLength
     where 
         increase :: (Num a, Eq a) => a -> a
         increase a = if a == 0 then 2 else a+1
@@ -36,16 +43,19 @@ startMessage = modify updateQueueLength
 
 endMessage :: WurmHelper ()
 endMessage = do
-    state@(ProgramState queueLength) <- get
-    put (state{_queueLength = _queueLength state - 1})
+    liftIO $ putStrLn "End"
+    state <- get
+    let queueLength = _queueLength state
     liftIO $ when (queueLength == 1) beep
+    put (state{_queueLength = _queueLength state - 1})
 
 processMessage :: String -> WurmHelper ()
 processMessage msg = either printError (\message ->
         case message of
+            ActionRepeat -> repeatMessage
             ActionStart -> startMessage
             ActionEnd -> endMessage
-            _ -> liftIO $ putStrLn "Other"
+            _ -> return ()
         ) $ parse parseEvent "Event" msg
 
     where printError s = liftIO $ print s
