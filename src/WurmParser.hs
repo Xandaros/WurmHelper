@@ -33,17 +33,22 @@ actionStart = string "You start" >> return ActionStart
 actionRepeat :: Parser EventMessage
 actionRepeat = do
     string "After "
-    action <- many $ noneOf " "
-    string " you will start "
-    string action
-    string " again."
+    action <- manyTill anyChar $ string "you will start "
     return ActionRepeat
 
 actionEnd :: Parser EventMessage
-actionEnd = (try createEnd <|> try repairEnd) >> return ActionEnd
+actionEnd = parseEndMessages >> return ActionEnd
 
-createEnd :: Parser ()
-createEnd = void $ string "You create a"
+endMessages :: [String]
+endMessages = [ "You create a"
+              , "You repair the"
+              , "You almost made it"
+              , "You attach"
+              , "You push"
+              , "You pull"
+              , "You chip away"
+              , "You cut down"
+              ]
 
-repairEnd :: Parser ()
-repairEnd = void $ string "You repair the"
+parseEndMessages :: Parser ()
+parseEndMessages = foldl (<|>) mzero $ map (void . try . string) endMessages
