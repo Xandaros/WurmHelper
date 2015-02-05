@@ -33,11 +33,14 @@ actionStart = string "You start" >> return ActionStart
 actionRepeat :: Parser EventMessage
 actionRepeat = do
     string "After "
-    action <- manyTill anyChar $ string "you will start "
+    action <- manyTill anyChar $ try $ string "you will start "
     return ActionRepeat
 
 actionEnd :: Parser EventMessage
-actionEnd = parseEndMessages >> return ActionEnd
+actionEnd = (parseEndMessages <|> noRepairMessage) >> return ActionEnd
+
+noRepairMessage :: Parser ()
+noRepairMessage = void $ manyTill anyChar $ try $ string "doesn't need repairing"
 
 endMessages :: [String]
 endMessages = [ "You create a"
