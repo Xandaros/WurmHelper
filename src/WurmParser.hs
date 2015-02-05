@@ -52,6 +52,7 @@ endMessages = [ "You create a"
               , "You chip away"
               , "You cut down"
               , "There is no space"
+              , "You dig a hole"
               ]
 
 parseEndMessages :: Parser ()
