@@ -47,7 +47,7 @@ endMessage = do
     state <- get
     let queueLength = _queueLength state
     liftIO $ when (queueLength == 1) beep
-    put (state{_queueLength = _queueLength state - 1})
+    when (queueLength >= 1) $ put (state{_queueLength = _queueLength state - 1})
 
 processMessage :: String -> WurmHelper ()
 processMessage msg = either printError (\message ->
