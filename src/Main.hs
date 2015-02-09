@@ -14,6 +14,8 @@ data Environment = Environment { _eventLog :: Handle
 data ProgramState = ProgramState { _queueLength :: Int
                                  }
 
+playername = "Xyonado"
+
 -- No idea why this doesn't work :'(
 --newtype WurmHelper a = WurmHelper { asdf :: StateT ProgramState (ReaderT Environment IO) a
 --                                  } deriving (Monad, MonadIO, MonadReader ProgramState, MonadState ProgramState)
@@ -71,6 +73,6 @@ mainLoop = do
 
 main :: IO ()
 main = do
-    handle <- openFile "/home/xandaros/wurm/players/Xyonado/logs/_Event.2015-02.txt" ReadMode
+    handle <- openFile ("/home/xandaros/wurm/players/" ++ playername ++ "/logs/_Event.2015-02.txt") ReadMode
     hSeek handle SeekFromEnd 0
     runWurmHelper mainLoop (Environment handle) (ProgramState 0)
