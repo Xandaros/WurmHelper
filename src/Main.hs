@@ -3,6 +3,7 @@ import Control.Monad.Reader
 import Control.Monad.State
 import Data.Either
 import System.IO
+import System.Process
 import Text.ParserCombinators.Parsec
 
 import WurmParser
@@ -23,7 +24,7 @@ runWurmHelper :: WurmHelper a -> Environment -> ProgramState -> IO a
 runWurmHelper wh env initState = runReaderT (evalStateT wh initState) env
 
 beep :: IO ()
-beep = putStr "Beep!\n\a"
+beep = void $ rawSystem "mplayer" ["-novideo", "-softvol", "-volume", "05", "sounds/queueFinish.wav"]
 
 startMessage :: WurmHelper ()
 startMessage = do
