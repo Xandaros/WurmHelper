@@ -53,6 +53,16 @@ endMessages = [ "You create a"
               , "You cut down"
               , "There is no space"
               , "You dig a hole"
+              , "You finish"
+              , "You improve"
+              , "You damage"
+              , "You must use"
+              , "You notice some"
+              , "You will want"
+              , "You managed to get a yield"
+              , "You sow"
+              , "You find"
+              , "This area looks picked clean."
               ]
 
 parseEndMessages :: Parser ()
