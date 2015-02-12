@@ -28,7 +28,7 @@ parseTime = do
     return "" -- TODO
 
 actionStart :: Parser EventMessage
-actionStart = string "You start" >> return ActionStart
+actionStart = string "You start" >> notFollowedBy (string " leading") >> return ActionStart
 
 actionRepeat :: Parser EventMessage
 actionRepeat = do
@@ -37,7 +37,10 @@ actionRepeat = do
     return ActionRepeat
 
 actionEnd :: Parser EventMessage
-actionEnd = (parseEndMessages <|> noRepairMessage) >> return ActionEnd
+actionEnd = (parseEndMessages <|> noRepairMessage <|> stopMessage) >> return ActionEnd
+
+stopMessage :: Parser ()
+stopMessage = void $ try $ string "You stop" >> notFollowedBy (string " leading")
 
 noRepairMessage :: Parser ()
 noRepairMessage = void $ manyTill anyChar $ try $ string "doesn't need repairing"
@@ -63,7 +66,23 @@ endMessages = [ "You create a"
               , "You sow"
               , "You find"
               , "This area looks picked clean."
+              , "You mine some"
+              , "You must not move"
+              , "The field is tended."
+              , "The field is now"
+              , "The field looks better"
+              , "doesn't need repairing"
+              , "could be improved"
+              , "has some excess cloth"
+              , "has some stains"
+              , "has an open seam"
+              , "has a seam"
+              , "is in too poor shape"
+              , "before you try to finish"
+              , "You fail to relax."
+              , "You failed to find anything to do with that."
+              , "You add"
               ]
 
 parseEndMessages :: Parser ()
-parseEndMessages = foldl (<|>) mzero $ map (void . try . string) endMessages
+parseEndMessages = void $ manyTill anyChar $ try $ foldl (<|>) mzero $ map (void . try . string) endMessages
