@@ -83,6 +83,10 @@ endMessages = [ "You create a"
               , "You failed to find anything to do with that."
               , "You add"
               , "contains too little material"
+              , "You throw out"
+              , "The fish breaks loose and swims away."
+              , "You catch a"
+              , "You seem to catch something but it escapes."
               ]
 
 parseEndMessages :: Parser ()
