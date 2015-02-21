@@ -82,6 +82,7 @@ endMessages = [ "You create a"
               , "You fail to relax."
               , "You failed to find anything to do with that."
               , "You add"
+              , "contains too little material"
               ]
 
 parseEndMessages :: Parser ()
