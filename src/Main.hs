@@ -1,4 +1,6 @@
 import Control.Applicative
+import Control.Concurrent (forkIO, yield)
+import Control.Monad
 import Control.Monad.Reader
 import Control.Monad.State
 import Data.Either
@@ -14,7 +16,7 @@ data Environment = Environment { _eventLog :: Handle
 data ProgramState = ProgramState { _queueLength :: Int
                                  }
 
-playername = "Xyonado"
+playerNames = ["Xyonado", "Donitayo"]
 
 -- No idea why this doesn't work :'(
 --newtype WurmHelper a = WurmHelper { asdf :: StateT ProgramState (ReaderT Environment IO) a
@@ -26,7 +28,7 @@ runWurmHelper :: WurmHelper a -> Environment -> ProgramState -> IO a
 runWurmHelper wh env initState = runReaderT (evalStateT wh initState) env
 
 beep :: IO ()
-beep = void $ rawSystem "mplayer" ["-novideo", "-softvol", "-volume", "05", "sounds/queueFinish.wav"]
+beep = void . forkIO . void $ rawSystem "mplayer" ["-novideo", "-softvol", "-volume", "05", "sounds/queueFinish.wav"]
 
 startMessage :: WurmHelper ()
 startMessage = do
@@ -73,6 +75,9 @@ mainLoop = do
 
 main :: IO ()
 main = do
-    handle <- openFile ("/home/xandaros/wurm/players/" ++ playername ++ "/logs/_Event.2015-02.txt") ReadMode
-    hSeek handle SeekFromEnd 0
-    runWurmHelper mainLoop (Environment handle) (ProgramState 0)
+    mapM_ (\playername -> do
+        handle <- openFile ("/home/xandaros/wurm/players/" ++ playername ++ "/logs/_Event.2015-02.txt") ReadMode
+        hSeek handle SeekFromEnd 0
+        forkIO $ runWurmHelper mainLoop (Environment handle) (ProgramState 0)
+        ) playerNames
+    forever yield
