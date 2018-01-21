@@ -19,8 +19,8 @@ executable WurmHelper
   main-is:             Main.hs
   -- other-modules:       
   -- other-extensions:    
-  GHC-Options:         -threaded
-  build-depends:       base >=4.7 && <4.8,
+  GHC-Options:         -threaded -O2
+  build-depends:       base,
                        mtl,
                        parsec >= 3.1.8,
                        process

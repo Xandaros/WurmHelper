@@ -28,7 +28,9 @@ parseTime = do
     return "" -- TODO
 
 actionStart :: Parser EventMessage
-actionStart = string "You start" >> notFollowedBy (string " leading") >> return ActionStart
+actionStart = do
+    (try $ string "You carefully start" >> return ()) <|> (try $ string "You start" >> notFollowedBy (string " leading")) <|> (try $ string "You throw out" >> return ())
+    return ActionStart
 
 actionRepeat :: Parser EventMessage
 actionRepeat = do
@@ -83,10 +85,17 @@ endMessages = [ "You create a"
               , "You failed to find anything to do with that."
               , "You add"
               , "contains too little material"
-              , "You throw out"
               , "The fish breaks loose and swims away."
               , "You catch a"
               , "You seem to catch something but it escapes."
+              , "You are now too far away"
+              , "kindly accepts your offerings."
+              , "You continue on"
+              , "You lay the foundation"
+              , "is finished now."
+              , "You successfully clear away"
+              , "You successfully identify"
+              , "You make a bad move"
               ]
 
 parseEndMessages :: Parser ()

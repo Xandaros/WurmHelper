@@ -1,5 +1,6 @@
 import Control.Applicative
-import Control.Concurrent (forkIO, yield)
+import Control.Concurrent (forkIO, yield, threadDelay)
+import Control.Exception as E (try)
 import Control.Monad
 import Control.Monad.Reader
 import Control.Monad.State
@@ -28,7 +29,7 @@ runWurmHelper :: WurmHelper a -> Environment -> ProgramState -> IO a
 runWurmHelper wh env initState = runReaderT (evalStateT wh initState) env
 
 beep :: IO ()
-beep = void . forkIO . void $ rawSystem "mplayer" ["-novideo", "-softvol", "-volume", "05", "sounds/queueFinish.wav"]
+beep = void . forkIO . void $ putStrLn "Finish" >> rawSystem "mplayer" ["-novideo", "-softvol", "sounds/queueFinish.wav"]
 
 startMessage :: WurmHelper ()
 startMessage = do
@@ -71,13 +72,17 @@ mainLoop = do
     eventHandle <- _eventLog <$> ask
     eventEOF <- liftIO $ hIsEOF eventHandle
     unless eventEOF (liftIO (hGetLine eventHandle) >>= processMessage)
+    liftIO $ threadDelay 100000
     mainLoop
 
 main :: IO ()
 main = do
     mapM_ (\playername -> do
-        handle <- openFile ("/home/xandaros/wurm/players/" ++ playername ++ "/logs/_Event.2015-02.txt") ReadMode
-        hSeek handle SeekFromEnd 0
-        forkIO $ runWurmHelper mainLoop (Environment handle) (ProgramState 0)
+        openedFile <- E.try $ openFile ("/home/xandaros/wurm/players/" ++ playername ++ "/logs/_Event.2018-01.txt") ReadMode :: IO (Either IOError Handle)
+        case openedFile of
+            Left _ -> return ()
+            Right handle -> do
+                hSeek handle SeekFromEnd 0
+                void $ forkIO $ runWurmHelper mainLoop (Environment handle) (ProgramState 0)
         ) playerNames
-    forever yield
+    forever $ threadDelay 1000000
