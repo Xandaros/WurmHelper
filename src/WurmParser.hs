@@ -99,6 +99,9 @@ endMessages = [ "You create a"
               , "You have now tended"
               , "shys away and interrupts the action."
               , "is already well tended."
+              , "get intimate."
+              , "doesn't seem to be in the mood right now."
+              , "is already pregnant."
               ]
 
 parseEndMessages :: Parser ()
