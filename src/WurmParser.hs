@@ -96,6 +96,9 @@ endMessages = [ "You create a"
               , "You successfully clear away"
               , "You successfully identify"
               , "You make a bad move"
+              , "You have now tended"
+              , "shys away and interrupts the action."
+              , "is already well tended."
               ]
 
 parseEndMessages :: Parser ()
